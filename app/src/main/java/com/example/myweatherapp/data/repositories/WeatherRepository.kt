@@ -6,8 +6,8 @@ import com.example.myweatherapp.data.models.CityCoordinatesResponse
 import com.example.myweatherapp.data.models.WeatherForecastResponse
 
 class WeatherRepository(
-    private val cityApiService: CityApiService,
-    private val weatherApiService: WeatherApiService
+    private val cityApiService: CityApiService,  // Для получения координат города
+    private val weatherApiService: WeatherApiService  // Для получения прогноза погоды
 ) {
 
     // Получение координат города
