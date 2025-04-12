@@ -82,6 +82,9 @@ dependencies {
     implementation ("androidx.compose.material:material:<version>")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:<version>")
 
+        implementation ("androidx.compose.material3:material3:1.0.0")  // Убедитесь, что эта строка присутствует
+        implementation ("androidx.compose.material:material:1.4.0") // Для других компонентов Material
+
 
 
 

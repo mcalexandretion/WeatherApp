@@ -18,36 +18,41 @@ class WeatherViewModel(
     private val _weatherState = MutableStateFlow<WeatherForecastResponse?>(null)
     val weatherState: StateFlow<WeatherForecastResponse?> = _weatherState
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     fun fetchWeatherForCity(cityName: String) {
         viewModelScope.launch {
-            try {
+            _isLoading.value = true
 
-                // Получаем список координат из City API
+            try {
                 val coordinatesList = getCityCoordinatesUseCase.execute(cityName)
                 if (coordinatesList.isNotEmpty()) {
                     val coordinates = coordinatesList.first()
                     Log.d("WeatherViewModel", "Coordinates: Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
 
-                    // Логируем параметры запроса для прогнозов
-                    Log.d("WeatherViewModel", "Fetching weather with Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
-
-                    // Логируем URL запроса вручную
-                    val url = "https://api.open-meteo.com/v1/forecast?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}&hourly=temperature_2m&forecast_days=16"
-                    Log.d("WeatherViewModel", "API Call URL: $url")
-
-                    // Получаем прогноз погоды по координатам
-                    val forecast = getWeatherForecastUseCase.execute(coordinates.latitude, coordinates.longitude)
-                    Log.d("WeatherViewModel", "Forecast received: ${forecast.hourly.temperature_2m[0]}")
-
+                    val forecast = getWeatherForecast(coordinates.latitude, coordinates.longitude)
                     _weatherState.value = forecast
                 } else {
                     Log.d("WeatherViewModel", "No coordinates found for city: $cityName")
+                    _errorMessage.value = "No coordinates found for city"
                     _weatherState.value = null
                 }
             } catch (e: Exception) {
-                Log.e("WeatherViewModel", "Error fetching data", e)
+                Log.e("WeatherViewModel", "Error fetching data: ${e.message}", e)
+                _errorMessage.value = "Error fetching data: ${e.message}" // Сделать сообщение более информативным
                 _weatherState.value = null
+            } finally {
+                _isLoading.value = false
             }
         }
+    }
+
+    private suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
+        Log.d("WeatherViewModel", "Fetching weather with Latitude = $latitude, Longitude = $longitude")
+        return getWeatherForecastUseCase.execute(latitude, longitude)
     }
 }
