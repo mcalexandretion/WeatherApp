@@ -23,30 +23,29 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Создаём Retrofit для City API и Weather API
         val cityApi = Retrofit.Builder()
-            .baseUrl("https://api.api-ninjas.com/") // Убедись, что это правильный базовый URL
+            .baseUrl("https://api.api-ninjas.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CityApiService::class.java)
 
 
         val weatherApi = Retrofit.Builder()
-            .baseUrl("https://api.open-meteo.com/v1/") // Базовый URL для Weather API
+            .baseUrl("https://api.open-meteo.com/v1/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApiService::class.java)
 
-        // Создаём репозитории и UseCases
+
         val repository = WeatherRepository(cityApi, weatherApi)
         val getCityCoordinatesUseCase = GetCityCoordinatesUseCase(repository)
         val getWeatherForecastUseCase = GetWeatherForecastUseCase(repository)
 
-        // Создаём ViewModel через Factory
+
         val factory = WeatherViewModelFactory(getCityCoordinatesUseCase, getWeatherForecastUseCase)
         weatherViewModel = ViewModelProvider(this, factory)[WeatherViewModel::class.java]
 
-        // Устанавливаем контент для активити
+
         setContent {
             MyWeatherAppTheme {
                 WeatherScreen(viewModel = weatherViewModel)
