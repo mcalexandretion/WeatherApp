@@ -1,0 +1,305 @@
+//
+//package com.example.myweatherapp.presentation.viewmodel
+//
+//import android.util.Log
+//import androidx.lifecycle.ViewModel
+//import androidx.lifecycle.viewModelScope
+//import com.example.myweatherapp.domain.usecases.GetCityCoordinatesUseCase
+//import com.example.myweatherapp.domain.usecases.GetWeatherForecastUseCase
+//import com.example.myweatherapp.data.models.WeatherForecastResponse
+//import kotlinx.coroutines.flow.MutableStateFlow
+//import kotlinx.coroutines.flow.StateFlow
+//import kotlinx.coroutines.launch
+//import com.example.myweatherapp.data.models.DailyForecast
+//import com.example.myweatherapp.data.models.HourlyForecast
+//
+//
+//class WeatherViewModel(
+//    private val getCityCoordinatesUseCase: GetCityCoordinatesUseCase,
+//    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+//) : ViewModel() {
+//
+//    private val _weatherState = MutableStateFlow<WeatherState?>(null)
+//    val weatherState: StateFlow<WeatherState?> = _weatherState
+//
+//    private val _errorMessage = MutableStateFlow<String?>(null)
+//    val errorMessage: StateFlow<String?> = _errorMessage
+//
+//    private val _isLoading = MutableStateFlow(false)
+//    val isLoading: StateFlow<Boolean> = _isLoading
+//
+//    fun fetchWeatherForCity(cityName: String) {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//
+//            try {
+//                val coordinatesList = getCityCoordinatesUseCase.execute(cityName)
+//                if (coordinatesList.isNotEmpty()) {
+//                    val coordinates = coordinatesList.first()
+//                    Log.d("WeatherViewModel", "Coordinates: Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
+//
+//                    // Получаем прогноз на несколько дней
+//                    val forecast = getWeatherForecast(coordinates.latitude, coordinates.longitude)
+//
+//                    // Обрабатываем прогноз
+//                    val weatherState = processWeatherData(forecast)
+//                    _weatherState.value = weatherState
+//                } else {
+//                    Log.d("WeatherViewModel", "No coordinates found for city: $cityName")
+//                    _errorMessage.value = "No coordinates found for city"
+//                    _weatherState.value = null
+//                }
+//            } catch (e: Exception) {
+//                Log.e("WeatherViewModel", "Error fetching data: ${e.message}", e)
+//                _errorMessage.value = "Error fetching data: ${e.message}"
+//                _weatherState.value = null
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
+//
+//    private suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
+//        Log.d("WeatherViewModel", "Fetching weather with Latitude = $latitude, Longitude = $longitude")
+//        return getWeatherForecastUseCase.execute(latitude, longitude)
+//    }
+//
+//    private fun processWeatherData(forecast: WeatherForecastResponse): WeatherState {
+//        val hourlyWeather = forecast.hourly
+//
+//        // Логирование данных для дебага
+//        Log.d("WeatherViewModel", "Hourly Weather: $hourlyWeather")
+//
+//        // Проверка на пустые данные перед обработкой
+//        if (hourlyWeather.temperature_2m.isEmpty()) {
+//            Log.e("WeatherViewModel", "No hourly temperature data available")
+//        }
+//        if (hourlyWeather.precipitation.isEmpty()) {
+//            Log.e("WeatherViewModel", "No hourly precipitation data available")
+//        }
+//        if (hourlyWeather.wind_speed_10m.isEmpty()) {
+//            Log.e("WeatherViewModel", "No hourly wind speed data available")
+//        }
+//
+//        // Разбиение на периоды дня
+//        val morning = getWeatherForTimeOfDay(hourlyWeather, 0, 6)
+//        val afternoon = getWeatherForTimeOfDay(hourlyWeather, 6, 12)
+//        val evening = getWeatherForTimeOfDay(hourlyWeather, 12, 18)
+//        val night = getWeatherForTimeOfDay(hourlyWeather, 18, 24)
+//
+//        return WeatherState(morning, afternoon, evening, night)
+//    }
+//
+//
+//    private fun getWeatherForTimeOfDay(hourlyWeather: HourlyForecast, startHour: Int, endHour: Int): WeatherPeriod {
+//        val temperatures = hourlyWeather.temperature_2m.slice(startHour until endHour)
+//        val precipitations = hourlyWeather.precipitation.slice(startHour until endHour)
+//        val windSpeeds = hourlyWeather.wind_speed_10m.slice(startHour until endHour)
+//
+//        return WeatherPeriod(
+//            temperatures = temperatures,
+//            precipitations = precipitations,
+//            windSpeeds = windSpeeds
+//        )
+//    }
+//}
+//
+//// Модели для отображения состояния погоды
+//data class WeatherState(
+//    val morning: WeatherPeriod,
+//    val afternoon: WeatherPeriod,
+//    val evening: WeatherPeriod,
+//    val night: WeatherPeriod
+//)
+//
+//data class WeatherPeriod(
+//    val temperatures: List<Double>,
+//    val precipitations: List<Double>,
+//    val windSpeeds: List<Double>
+//)
+
+
+
+//class WeatherViewModel(
+//    private val getCityCoordinatesUseCase: GetCityCoordinatesUseCase,
+//    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+//) : ViewModel() {
+//
+//    private val _weatherState = MutableStateFlow<WeatherState?>(null)
+//    val weatherState: StateFlow<WeatherState?> = _weatherState
+//
+//    private val _errorMessage = MutableStateFlow<String?>(null)
+//    val errorMessage: StateFlow<String?> = _errorMessage
+//
+//    private val _isLoading = MutableStateFlow(false)
+//    val isLoading: StateFlow<Boolean> = _isLoading
+//
+//    fun fetchWeatherForCity(cityName: String) {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//
+//            try {
+//                val coordinatesList = getCityCoordinatesUseCase.execute(cityName)
+//                if (coordinatesList.isNotEmpty()) {
+//                    val coordinates = coordinatesList.first()
+//                    Log.d("WeatherViewModel", "Coordinates: Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
+//
+//                    // Получаем прогноз на несколько дней
+//                    val forecast = getWeatherForecast(coordinates.latitude, coordinates.longitude)
+//
+//                    // Разбиваем данные по времени суток
+//                    val weatherState = processWeatherData(forecast)
+//                    _weatherState.value = weatherState
+//                } else {
+//                    Log.d("WeatherViewModel", "No coordinates found for city: $cityName")
+//                    _errorMessage.value = "No coordinates found for city"
+//                    _weatherState.value = null
+//                }
+//            } catch (e: Exception) {
+//                Log.e("WeatherViewModel", "Error fetching data: ${e.message}", e)
+//                _errorMessage.value = "Error fetching data: ${e.message}"
+//                _weatherState.value = null
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
+//
+//    private suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
+//        Log.d("WeatherViewModel", "Fetching weather with Latitude = $latitude, Longitude = $longitude")
+//        return getWeatherForecastUseCase.execute(latitude, longitude)
+//    }
+//
+//    private fun processWeatherData(forecast: WeatherForecastResponse): WeatherState {
+//        val hourlyWeather = forecast.hourly
+//        val morning = getWeatherForTimeOfDay(hourlyWeather, 0, 6)
+//        val afternoon = getWeatherForTimeOfDay(hourlyWeather, 6, 12)
+//        val evening = getWeatherForTimeOfDay(hourlyWeather, 12, 18)
+//        val night = getWeatherForTimeOfDay(hourlyWeather, 18, 24)
+//
+//        return WeatherState(morning, afternoon, evening, night)
+//    }
+//
+//    private fun getWeatherForTimeOfDay(hourlyWeather: HourlyForecast, startHour: Int, endHour: Int): WeatherPeriod {
+//        val temperatures = hourlyWeather.temperature_2m.slice(startHour until endHour)
+//        val precipitations = hourlyWeather.precipitation.slice(startHour until endHour)
+//        val windSpeeds = hourlyWeather.wind_speed_10m.slice(startHour until endHour)
+//
+//        return WeatherPeriod(
+//            temperatures = temperatures,
+//            precipitations = precipitations,
+//            windSpeeds = windSpeeds
+//        )
+//    }
+//}
+//
+//// Модели для отображения состояния погоды
+//data class WeatherState(
+//    val morning: WeatherPeriod,
+//    val afternoon: WeatherPeriod,
+//    val evening: WeatherPeriod,
+//    val night: WeatherPeriod
+//)
+//
+//data class WeatherPeriod(
+//    val temperatures: List<Double>,
+//    val precipitations: List<Double>,
+//    val windSpeeds: List<Double>
+//)
+
+//
+//class WeatherViewModel(
+//    private val getCityCoordinatesUseCase: GetCityCoordinatesUseCase,
+//    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+//) : ViewModel() {
+//
+//    private val _weatherState = MutableStateFlow<WeatherForecastResponse?>(null)
+//    val weatherState: StateFlow<WeatherForecastResponse?> = _weatherState
+//
+//    private val _errorMessage = MutableStateFlow<String?>(null)
+//    val errorMessage: StateFlow<String?> = _errorMessage
+//
+//    private val _isLoading = MutableStateFlow(false)
+//    val isLoading: StateFlow<Boolean> = _isLoading
+//
+//    fun fetchWeatherForCity(cityName: String) {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//
+//            try {
+//                val coordinatesList = getCityCoordinatesUseCase.execute(cityName)
+//                if (coordinatesList.isNotEmpty()) {
+//                    val coordinates = coordinatesList.first()
+//                    Log.d("WeatherViewModel", "Coordinates: Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
+//
+//                    // Получаем прогноз на несколько дней
+//                    val forecast = getWeatherForecast(coordinates.latitude, coordinates.longitude)
+//                    _weatherState.value = forecast
+//                } else {
+//                    Log.d("WeatherViewModel", "No coordinates found for city: $cityName")
+//                    _errorMessage.value = "No coordinates found for city"
+//                    _weatherState.value = null
+//                }
+//            } catch (e: Exception) {
+//                Log.e("WeatherViewModel", "Error fetching data: ${e.message}", e)
+//                _errorMessage.value = "Error fetching data: ${e.message}" // Сделать сообщение более информативным
+//                _weatherState.value = null
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
+//
+//    private suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
+//        Log.d("WeatherViewModel", "Fetching weather with Latitude = $latitude, Longitude = $longitude")
+//        return getWeatherForecastUseCase.execute(latitude, longitude)
+//    }
+//}
+
+//
+//class WeatherViewModel(
+//    private val getCityCoordinatesUseCase: GetCityCoordinatesUseCase,
+//    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+//) : ViewModel() {
+//
+//    private val _weatherState = MutableStateFlow<WeatherForecastResponse?>(null)
+//    val weatherState: StateFlow<WeatherForecastResponse?> = _weatherState
+//
+//    private val _errorMessage = MutableStateFlow<String?>(null)
+//    val errorMessage: StateFlow<String?> = _errorMessage
+//
+//    private val _isLoading = MutableStateFlow(false)
+//    val isLoading: StateFlow<Boolean> = _isLoading
+//
+//    fun fetchWeatherForCity(cityName: String) {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//
+//            try {
+//                val coordinatesList = getCityCoordinatesUseCase.execute(cityName)
+//                if (coordinatesList.isNotEmpty()) {
+//                    val coordinates = coordinatesList.first()
+//                    Log.d("WeatherViewModel", "Coordinates: Latitude = ${coordinates.latitude}, Longitude = ${coordinates.longitude}")
+//
+//                    val forecast = getWeatherForecast(coordinates.latitude, coordinates.longitude)
+//                    _weatherState.value = forecast
+//                } else {
+//                    Log.d("WeatherViewModel", "No coordinates found for city: $cityName")
+//                    _errorMessage.value = "No coordinates found for city"
+//                    _weatherState.value = null
+//                }
+//            } catch (e: Exception) {
+//                Log.e("WeatherViewModel", "Error fetching data: ${e.message}", e)
+//                _errorMessage.value = "Error fetching data: ${e.message}" // Сделать сообщение более информативным
+//                _weatherState.value = null
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
+//
+//    private suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
+//        Log.d("WeatherViewModel", "Fetching weather with Latitude = $latitude, Longitude = $longitude")
+//        return getWeatherForecastUseCase.execute(latitude, longitude)
+//    }
+//}
