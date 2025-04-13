@@ -1,7 +1,7 @@
 
 # Мобильное приложение "Погода" на Kotlin с Jetpack Compose
 
-app  
+app/src/main  
 ├── manifests  
 │   └── AndroidManifest.xml  
 ├── kotlin+java  
