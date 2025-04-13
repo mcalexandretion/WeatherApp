@@ -12,8 +12,8 @@ interface WeatherApiService {
         @Query("longitude") longitude: Double,
         @Query("hourly") hourly: String = "temperature_2m,precipitation,wind_speed_10m,weather_code",
         @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max",
-        @Query("timezone") timezone: String = "auto",  // Use 'auto' to get the local timezone
-        @Query("forecast_days") forecastDays: Int = 7 // Default is 7 days forecast
+        @Query("timezone") timezone: String = "auto",
+        @Query("forecast_days") forecastDays: Int = 16
     ): WeatherForecastResponse
 }
 
@@ -31,7 +31,7 @@ interface WeatherApiService {
 //    suspend fun getWeatherForecast(
 //        @Query("latitude") latitude: Double,
 //        @Query("longitude") longitude: Double,
-//        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min",  // Добавляем запрос для дневных температур
-//        @Query("forecast_days") forecastDays: Int = 7 // Указываем количество дней (например, 7)
+//        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min",
+//        @Query("forecast_days") forecastDays: Int = 7
 //    ): WeatherForecastResponse
 

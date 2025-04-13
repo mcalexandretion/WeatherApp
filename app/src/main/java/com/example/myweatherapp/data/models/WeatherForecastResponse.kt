@@ -28,12 +28,12 @@ data class HourlyForecast(
 //)
 //
 //data class Daily(
-//    val time: List<String>, // Даты
-//    val temperature_2m_max: List<Double>, // Максимальная температура
-//    val temperature_2m_min: List<Double>, // Минимальная температура
-//    val precipitation_sum: List<Double>, // Количество осадков (в мм)
-//    val wind_speed_10m_max: List<Double>, // Максимальная скорость ветра (м/с)
-//    val weathercode: List<Int> // Код погоды (например, дождь, ясное небо)
+//    val time: List<String>,
+//    val temperature_2m_max: List<Double>,
+//    val temperature_2m_min: List<Double>,
+//    val precipitation_sum: List<Double>,
+//    val wind_speed_10m_max: List<Double>,
+//    val weathercode: List<Int>
 //)
 //
 

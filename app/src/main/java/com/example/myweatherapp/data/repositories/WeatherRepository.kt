@@ -6,16 +6,14 @@ import com.example.myweatherapp.data.models.CityCoordinatesResponse
 import com.example.myweatherapp.data.models.WeatherForecastResponse
 
 class WeatherRepository(
-    private val cityApiService: CityApiService,  // Для получения координат города
-    private val weatherApiService: WeatherApiService  // Для получения прогноза погоды
+    private val cityApiService: CityApiService,
+    private val weatherApiService: WeatherApiService
 ) {
 
-    // Получение координат города
     suspend fun getCityCoordinates(cityName: String): List<CityCoordinatesResponse> {
         return cityApiService.getCityCoordinates(cityName)
     }
 
-    // Получение прогноза погоды по координатам
     suspend fun getWeatherForecast(latitude: Double, longitude: Double): WeatherForecastResponse {
         return weatherApiService.getWeatherForecast(latitude, longitude)
     }
