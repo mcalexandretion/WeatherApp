@@ -58,33 +58,20 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-        // Jetpack Compose
-        implementation ("androidx.compose.ui:ui:1.3.0")
-        implementation ("androidx.compose.material:material:1.3.0")
-        implementation ("androidx.compose.ui:ui-tooling-preview:1.3.0")
-        implementation ("androidx.navigation:navigation-compose:2.5.3")
-
-        // Retrofit для работы с API
-        implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-        implementation( "com.squareup.retrofit2:converter-gson:2.9.0")
-
-        // Coroutine для асинхронных операций
-        implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-
-        // Gson для парсинга JSON
-        implementation ("com.google.code.gson:gson:2.8.8")
-
-        // OkHttp для HTTP запросов
-        implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-
-
+    implementation ("androidx.compose.ui:ui:1.3.0")
+    implementation ("androidx.compose.material:material:1.3.0")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.3.0")
+    implementation ("androidx.navigation:navigation-compose:2.5.3")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation( "com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation ("com.google.code.gson:gson:2.8.8")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("androidx.compose.ui:ui:<version>")
     implementation ("androidx.compose.material:material:<version>")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:<version>")
-
-        implementation ("androidx.compose.material3:material3:1.0.0")  // Убедитесь, что эта строка присутствует
-        implementation ("androidx.compose.material:material:1.4.0") // Для других компонентов Material
-
+    implementation ("androidx.compose.material3:material3:1.0.0")
+    implementation ("androidx.compose.material:material:1.4.0")
     implementation ("androidx.compose.ui:ui:1.4.0")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
 

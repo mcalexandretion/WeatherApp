@@ -27,6 +27,14 @@ class WeatherViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _selectedCity = MutableStateFlow("Saint Petersburg")
+    val selectedCity: StateFlow<String> = _selectedCity
+
+    fun updateSelectedCity(city: String) {
+        _selectedCity.value = city
+    }
+
+
     fun fetchWeatherForCity(cityName: String) {
         viewModelScope.launch {
             _isLoading.value = true

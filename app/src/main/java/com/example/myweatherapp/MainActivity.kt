@@ -79,7 +79,6 @@ fun WeatherNavGraph(viewModel: WeatherViewModel) {
             WeatherScreen(
                 viewModel = viewModel,
                 onDayClick = { dateIndex, city ->
-                    // navigate with arguments
                     val encodedCity = URLEncoder.encode(city, "UTF-8")
                     navController.navigate("weather_detail/$encodedCity/$dateIndex")
                 }

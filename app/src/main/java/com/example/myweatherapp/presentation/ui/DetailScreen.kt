@@ -6,9 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,8 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherapp.presentation.viewmodel.WeatherViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
+import com.example.myweatherapp.presentation.ui.CurrentWeatherCard
 
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
     cityName: String,
@@ -28,43 +30,92 @@ fun DetailScreen(
     val state = viewModel.weatherState.value ?: return
     val daily = state.daily
     val hourly = state.hourly
-    val date = daily.time.getOrNull(dayIndex) ?: ""
+    val rawDate = daily.time.getOrNull(dayIndex) ?: return
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Back button
-        Button(onClick = onBack) {
-            Text("Back")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = cityName, style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(4.dp))
+    val parts = rawDate.split("-")
+    val month = parts[1].toIntOrNull()?.let { java.time.Month.of(it) } ?: java.time.Month.JANUARY
+    val day = parts.getOrNull(2)?.toIntOrNull() ?: 1
+    val enMonth = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+    val headerDate = "Weather on $day $enMonth"
 
-        // Current temperature (closest to now)
-        val now = LocalDateTime.now()
-        val fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")
-        val nowKey = now.format(fmt)
-        val currentIndex = hourly.time.indexOf(nowKey).let { if (it >= 0) it else 0 }
-        val currentTemp = hourly.temperature_2m.getOrNull(currentIndex) ?: 0.0
-        Text(text = "Current Temperature: ${currentTemp}°C", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(8.dp))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(cityName) },
+                navigationIcon = {
+                    Text(
+                        text = "< Back",
+                        modifier = Modifier
+                            .clickable(onClick = onBack)
+                            .padding(horizontal = 16.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
 
-        Text(text = "Hourly details for ${date}", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(4.dp))
+            val now = LocalDateTime.now()
+            val fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:00")
+            val key = now.format(fmt)
+            val idx = hourly.time.indexOf(key).coerceAtLeast(0)
+            val tempNow = hourly.temperature_2m.getOrNull(idx) ?: 0.0
 
-        val hourlyForDay = hourly.time.indices.filter { idx ->
-            hourly.time[idx].startsWith(date)
-        }.map { idx -> hourly.time[idx] to hourly.temperature_2m[idx] }
+            CurrentWeatherCard(temperature = tempNow)
+            Spacer(modifier = Modifier.height(20.dp))
 
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(hourlyForDay) { (time, temp) ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = time.substringAfter('T') + "h")
-                    Text(text = "${temp}°C")
+
+            Text(
+                text = headerDate,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+
+            val list = hourly.time.indices.filter { it -> hourly.time[it].startsWith(rawDate) }
+                .map { it to hourly.temperature_2m[it] }
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(list) { (i, t) ->
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        tonalElevation = 4.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = hourly.time[i].substringAfter('T') + "h",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "${t}°C",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 }
             }
         }
