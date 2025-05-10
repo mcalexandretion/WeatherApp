@@ -13,6 +13,9 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.myweatherapp.R
 
 @Composable
 fun CurrentWeatherCard(
@@ -50,19 +53,23 @@ fun CurrentWeatherCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Now: ${temperature}°C",
-                    style = MaterialTheme.typography.displaySmall
+                    text = "Now ${temperature}°C",
+                    style = MaterialTheme.typography.headlineLarge
                 )
 
-                val now = LocalDateTime.now()
-                val formattedDate = now.format(DateTimeFormatter.ofPattern("dd MMMM"))
+                Image(
+                    painter = painterResource(id = R.drawable.icon1),
+                    contentDescription = "Weather Icon",
+                    modifier = Modifier.size(48.dp)
+                )
 
                 Text(
-                    text = formattedDate,
-                    style = MaterialTheme.typography.displaySmall,
+                    text = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM", Locale.getDefault())),
+                    style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
+
         }
     }
 }

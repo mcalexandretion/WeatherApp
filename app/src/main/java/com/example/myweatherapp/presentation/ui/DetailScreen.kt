@@ -17,6 +17,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import com.example.myweatherapp.presentation.ui.CurrentWeatherCard
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import com.example.myweatherapp.R
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,19 +106,31 @@ fun DetailScreen(
                             modifier = Modifier
                                 .padding(12.dp)
                                 .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = hourly.time[i].substringAfter('T') + "h",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.icon2),
+                                    contentDescription = "Weather Icon",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(end = 12.dp)
+                                )
+                                Text(
+                                    text = hourly.time[i].substringAfter('T'),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+
                             Text(
                                 text = "${t}°C",
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
+
                     }
                 }
             }

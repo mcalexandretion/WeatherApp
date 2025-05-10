@@ -1,5 +1,6 @@
 package com.example.myweatherapp.presentation.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.example.myweatherapp.presentation.ui.CurrentWeatherCard
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import com.example.myweatherapp.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +40,6 @@ fun WeatherScreen(
     var textFieldValue by remember { mutableStateOf(cityName) }
     val availableCities = listOf("Saint Petersburg", "Moscow", "New York", "London", "Berlin")
 
-    // Получаем данные о погоде для города при изменении cityName
     LaunchedEffect(cityName) { viewModel.fetchWeatherForCity(cityName) }
 
     Scaffold(
@@ -79,7 +83,6 @@ fun WeatherScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Режим выбора города
             if (isCitySelectionMode) {
                 OutlinedTextField(
                     value = textFieldValue,
@@ -113,7 +116,6 @@ fun WeatherScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Загрузка данных
             if (isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
@@ -144,16 +146,29 @@ fun WeatherScreen(
                                     Modifier
                                         .padding(16.dp)
                                         .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(text = date, style = MaterialTheme.typography.bodyLarge)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.icon2),
+                                            contentDescription = "Weather Icon",
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .padding(end = 12.dp)
+                                        )
+                                        Text(text = date, style = MaterialTheme.typography.bodyLarge)
+                                    }
                                     Column(
                                         horizontalAlignment = Alignment.End
                                     ) {
-                                        Text(text = "Max: ${max}°C", style = MaterialTheme.typography.bodyMedium)
-                                        Text(text = "Min: ${min}°C", style = MaterialTheme.typography.bodySmall)
+                                        Text(text = "Max: ${max}°C", style = MaterialTheme.typography.titleMedium)
+                                        Text(text = "Min: ${min}°C", style = MaterialTheme.typography.titleSmall)
                                     }
                                 }
+
                             }
                         }
                     }
