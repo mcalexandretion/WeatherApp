@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 object AppModule {
-    private const val BASE_URL_CITY = "https://api.api-ninjas.com/v1/"
+    private const val BASE_URL_CITY = "https://api.api-ninjas.com/"
     private const val BASE_URL_WEATHER = "https://api.open-meteo.com/"
 
     val weatherApiService: WeatherApiService = Retrofit.Builder()

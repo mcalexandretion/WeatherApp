@@ -8,9 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WeatherDayBlock(date: String, dayIndex: Int, minTemp: Double, maxTemp: Double) {
+fun WeatherDayBlock(
+    date: String,
+    dayIndex: Int,
+    minTemp: Double,
+    maxTemp: Double,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.padding(vertical = 4.dp),
+        modifier = modifier.padding(vertical = 4.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = date)
